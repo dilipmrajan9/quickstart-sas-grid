@@ -46,27 +46,27 @@
                 },
                 {
                     "Label": {
-                        "default": "Storage Stack:"
+                        "default": "Storage stack configuration"
                     },
                     "Parameters": [
                         "StorageStack",
                         "StorageNodeCount",
                         "StorageEBSVolumeType",
-                        "StorageEBSVolumeSize"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "Personal Configuration:"
-                    },
-                    "Parameters": [
-                        "OperatorEmail",
+                        "StorageEBSVolumeSize",
                         "StorageKeyPairName"
                     ]
                 },
                 {
                     "Label": {
-                        "default": "License Information:"
+                        "default": "Personal configuration"
+                    },
+                    "Parameters": [
+                        "OperatorEmail"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "License information"
                     },
                     "Parameters": [
                         "LicenseAgreementTerms"
@@ -74,7 +74,7 @@
                 },
                 {
                     "Label": {
-                        "default": "SAS Grid EC2 Configuration"
+                        "default": "SAS Grid EC2 configuration"
                     },
                     "Parameters": [
                         "SASGridKeyPairName",
@@ -103,7 +103,7 @@
             ],
             "ParameterLabels": {
                 "StorageStack": {
-                    "default": "Select the Storage Stack"
+                    "default": "Storage stack"
                 },
                 "SASSoftwareDepot": {
                     "default": "SAS Software Depot tar file in S3"
@@ -148,16 +148,16 @@
                     "default": "Number of Lustre OSS nodes"
                 },
                 "PrivateSubnet1CIDR": {
-                    "default": "Private Subnet 1(AZ1) CIDR"
+                    "default": "Private Subnet 1 (AZ1) CIDR"
                 },
                 "PrivateSubnet2CIDR": {
-                    "default": "Private Subnet 2(AZ1) CIDR"
+                    "default": "Private Subnet 2 (AZ1) CIDR"
                 },
                 "PrivateSubnet3CIDR": {
-                    "default": "Private Subnet 3(AZ2) CIDR"
+                    "default": "Private Subnet 3 (AZ2) CIDR"
                 },
                 "PrivateSubnet4CIDR": {
-                    "default": "Private Subnet 4(AZ2) CIDR"
+                    "default": "Private Subnet 4 (AZ2) CIDR"
                 },
                 "PublicSubnet1CIDR": {
                     "default": "Public subnet 1 CIDR"
@@ -172,10 +172,10 @@
                     "default": "Quick Start S3 key prefix"
                 },
                 "StorageEBSVolumeType": {
-                    "default": "EBS Volumes type for Storage Instances"
+                    "default": "EBS volume type for storage instances"
                 },
                 "StorageEBSVolumeSize": {
-                    "default": "Storage Disk size for each node"
+                    "default": "Storage disk size for each node"
                 },
                 "RDGWInstanceType": {
                     "default": "RDGW instance type"
@@ -190,16 +190,16 @@
                     "default": "Instance type for SAS Grid instances"
                 },
                 "NoOfSASGridInstances": {
-                    "default": "Required No of SASGrid Instances"
+                    "default": "Required number of SASGrid Instances"
                 },
                 "LicenseAgreementTerms": {
-                    "default": "License Agreement Terms"
+                    "default": "License agreement terms"
                 },
                 "StorageNodeCount": {
-                    "default": "Server Node Configurations: Server Node Count"
+                    "default": "Storage node count"
                 },
                 "OperatorEmail": {
-                    "default": "Operator Email"
+                    "default": "Operator email"
                 }
             }
         }
@@ -263,7 +263,7 @@
             "Type": "String"
         },
         "StorageStack": {
-            "Description": "Select Storage Stack",
+            "Description": "The storage stack you want to use. The two choices are Lustre or IBM Spectrum Scale (GPFS).",
             "Type": "String",
             "AllowedValues": [
                 "Lustre",
