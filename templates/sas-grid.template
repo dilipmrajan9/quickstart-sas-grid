@@ -42,7 +42,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Storage Stack:"
+                        "default": "Storage stack configuration"
                     },
                     "Parameters": [
                         "StorageStack",
@@ -98,29 +98,29 @@
                 }
             ],
             "ParameterLabels": {
-                "StorageStack": {
-                    "default": "Select the Storage Stack"
+                "AdminIngressLocation": {
+                    "default": "Admin ingress location"
                 },
-                "SASSoftwareDepot": {
-                    "default": "SAS Software Depot tar file in S3"
+                "AdminPassword": {
+                    "default": "Admin password"
                 },
-                "SASSoftwareDepotName": {
-                    "default": "SAS Software Depot name"
+                "DomainDNSName": {
+                    "default": "Domain DNS name"
                 },
-                "SASPlanFiles": {
-                    "default": "SAS plan files folder in S3"
+                "LicenseAgreementTerms": {
+                    "default": "License agreement terms"
                 },
-                "SASLicenseMeta": {
-                    "default": "SAS Metadata Server license file"
+                "LustreOSSEBSVolumeSize": {
+                    "default": "EBS volume size for Lustre OSS"
                 },
-                "SASLicenseApp": {
-                    "default": "SAS Application Server license file"
+                "NoOfSASGridInstances": {
+                    "default": "Required number of SAS Grid instances"
                 },
-                "VPCID": {
-                    "default": "VPC ID"
+                "NumberOfOSSNodes": {
+                    "default": "Number of Lustre OSS nodes"
                 },
-                "VPCCIDR": {
-                    "default": "VPC CIDR"
+                "OperatorEmail": {
+                    "default": "Operator email"
                 },
                 "PrivateSubnet1ID": {
                     "default": "Private subnet 1 ID"
@@ -128,56 +128,62 @@
                 "PrivateSubnet2ID": {
                     "default": "Private subnet 2 ID"
                 },
-                "PublicSubnet1ID": {
-                    "default": "Public subnet 1 ID"
-                },
                 "PrivateSubnet3ID": {
                     "default": "Private Subnet 3 ID"
                 },
-                "DomainDNSName": {
-                    "default": "Domain DNS name"
-                },
-                "RDGWSG": {
-                    "default": "RDGW security group ID"
-                },
-                "StorageKeyPairName": {
-                    "default": "Storage KeyPair Name"
-                },
-                "LustreOSSEBSVolumeSize": {
-                    "default": "EBS volume size for Lustre OSS"
-                },
-                "NumberOfOSSNodes": {
-                    "default": "Number of Lustre OSS nodes"
-                },
-                "SASGridKeyPairName": {
-                    "default": "SAS Grid key pair name"
-                },
-                "SASGridInstanceType": {
-                    "default": "Instance type for SAS Grid instances"
-                },
-                "NoOfSASGridInstances": {
-                    "default": "Required number of SAS Grid instances"
+                "PublicSubnet1ID": {
+                    "default": "Public subnet 1 ID"
                 },
                 "QSS3BucketName": {
-                    "default": "Quick Start S3 bucket Name"
+                    "default": "Quick Start S3 bucket name"
                 },
                 "QSS3KeyPrefix": {
                     "default": "Quick Start S3 key prefix"
                 },
-                "StorageEBSVolumeType": {
-                    "default": "EBS Volumes type for Storage Instances"
+                "RDGWSG": {
+                    "default": "RDGW security group ID"
                 },
-                "LicenseAgreementTerms": {
-                    "default": "License Agreement Terms"
+                "SASGridInstanceType": {
+                    "default": "Instance type for SAS Grid instances"
                 },
-                "StorageNodeCount": {
-                    "default": "Server Node Configurations: Server Node Count"
+                "SASGridKeyPairName": {
+                    "default": "SAS Grid key pair name"
                 },
-                "OperatorEmail": {
-                    "default": "Operator Email"
+                "SASLicenseApp": {
+                    "default": "SAS Application Server license file"
+                },
+                "SASLicenseMeta": {
+                    "default": "SAS Metadata Server license file"
+                },
+                "SASPlanFiles": {
+                    "default": "SAS plan files folder in S3"
+                },
+                "SASSoftwareDepot": {
+                    "default": "SAS Software Depot tar file in S3"
+                },
+                "SASSoftwareDepotName": {
+                    "default": "SAS Software Depot name"
                 },
                 "StorageEBSVolumeSize": {
-                    "default": "Storage Disk size for each node"
+                    "default": "Storage disk size for each node"
+                },
+                "StorageEBSVolumeType": {
+                    "default": "EBS volume type for storage instances"
+                },
+                "StorageKeyPairName": {
+                    "default": "Storage key pair name"
+                },
+                "StorageNodeCount": {
+                    "default": "Storage node count"
+                },
+                "StorageStack": {
+                    "default": "Storage stack"
+                },
+                "VPCCIDR": {
+                    "default": "VPC CIDR"
+                },
+                "VPCID": {
+                    "default": "VPC ID"
                 }
             }
         }

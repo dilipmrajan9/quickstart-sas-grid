@@ -102,50 +102,32 @@
                 }
             ],
             "ParameterLabels": {
-                "StorageStack": {
-                    "default": "Storage stack"
-                },
-                "SASSoftwareDepot": {
-                    "default": "SAS Software Depot tar file in S3"
-                },
-                "SASSoftwareDepotName": {
-                    "default": "SAS Software Depot name"
-                },
-                "SASPlanFiles": {
-                    "default": "SAS plan files folder in S3"
-                },
-                "SASLicenseMeta": {
-                    "default": "SAS Metadata Server license file"
-                },
-                "SASLicenseApp": {
-                    "default": "SAS Application Server license file"
-                },
-                "AvailabilityZones": {
-                    "default": "Availability Zones"
-                },
                 "AdminPassword": {
                     "default": "Admin password"
                 },
                 "AdminUser": {
                     "default": "Admin user name"
                 },
+                "AvailabilityZones": {
+                    "default": "Availability Zones"
+                },
                 "DomainDNSName": {
                     "default": "Domain DNS name"
                 },
-                "RDGWKeyPairName": {
-                    "default": "RDGW key pair name"
-                },
-                "SASGridKeyPairName": {
-                    "default": "SAS Grid key pair name"
-                },
-                "StorageKeyPairName": {
-                    "default": "Storage KeyPair Name"
+                "LicenseAgreementTerms": {
+                    "default": "License agreement terms"
                 },
                 "LustreOSSEBSVolumeSize": {
                     "default": "EBS volume size for Lustre OSS"
                 },
+                "NoOfSASGridInstances": {
+                    "default": "Required number of SASGrid Instances"
+                },
                 "NumberOfOSSNodes": {
                     "default": "Number of Lustre OSS nodes"
+                },
+                "OperatorEmail": {
+                    "default": "Operator email"
                 },
                 "PrivateSubnet1CIDR": {
                     "default": "Private Subnet 1 (AZ1) CIDR"
@@ -171,35 +153,53 @@
                 "QSS3KeyPrefix": {
                     "default": "Quick Start S3 key prefix"
                 },
-                "StorageEBSVolumeType": {
-                    "default": "EBS volume type for storage instances"
-                },
-                "StorageEBSVolumeSize": {
-                    "default": "Storage disk size for each node"
+                "RDGWCIDR": {
+                    "default": "Allowed RDGW external access CIDR"
                 },
                 "RDGWInstanceType": {
                     "default": "RDGW instance type"
                 },
-                "RDGWCIDR": {
-                    "default": "Allowed RDGW external access CIDR"
-                },
-                "VPCCIDR": {
-                    "default": "VPC CIDR"
+                "RDGWKeyPairName": {
+                    "default": "RDGW key pair name"
                 },
                 "SASGridInstanceType": {
                     "default": "Instance type for SAS Grid instances"
                 },
-                "NoOfSASGridInstances": {
-                    "default": "Required number of SASGrid Instances"
+                "SASGridKeyPairName": {
+                    "default": "SAS Grid key pair name"
                 },
-                "LicenseAgreementTerms": {
-                    "default": "License agreement terms"
+                "SASLicenseApp": {
+                    "default": "SAS Application Server license file"
+                },
+                "SASLicenseMeta": {
+                    "default": "SAS Metadata Server license file"
+                },
+                "SASPlanFiles": {
+                    "default": "SAS plan files folder in S3"
+                },
+                "SASSoftwareDepot": {
+                    "default": "SAS Software Depot tar file in S3"
+                },
+                "SASSoftwareDepotName": {
+                    "default": "SAS Software Depot name"
+                },
+                "StorageEBSVolumeSize": {
+                    "default": "Storage disk size for each node"
+                },
+                "StorageEBSVolumeType": {
+                    "default": "EBS volume type for storage instances"
+                },
+                "StorageKeyPairName": {
+                    "default": "Storage key pair name"
                 },
                 "StorageNodeCount": {
                     "default": "Storage node count"
                 },
-                "OperatorEmail": {
-                    "default": "Operator email"
+                "StorageStack": {
+                    "default": "Storage stack"
+                },
+                "VPCCIDR": {
+                    "default": "VPC CIDR"
                 }
             }
         }
