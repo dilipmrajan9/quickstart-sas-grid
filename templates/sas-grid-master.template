@@ -294,7 +294,7 @@
             "Default": "2"
         },
         "StorageKeyPairName": {
-            "Description": "Name of an existing EC2 Key Pair.",
+            "Description": "Name of an existing EC2 key pair.",
             "Type": "AWS::EC2::KeyPair::KeyName",
             "MinLength": "1",
             "ConstraintDescription": "must be the name of an existing EC2 KeyPair."

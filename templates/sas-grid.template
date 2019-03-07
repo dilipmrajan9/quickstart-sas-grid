@@ -48,21 +48,21 @@
                         "StorageStack",
                         "StorageNodeCount",
                         "StorageEBSVolumeType",
-                        "StorageEBSVolumeSize"
-                    ]
-                },
-                {
-                    "Label": {
-                        "default": "Personal Configuration:"
-                    },
-                    "Parameters": [
-                        "OperatorEmail",
+                        "StorageEBSVolumeSize",
                         "StorageKeyPairName"
                     ]
                 },
                 {
                     "Label": {
-                        "default": "License Information:"
+                        "default": "Personal configuration"
+                    },
+                    "Parameters": [
+                        "OperatorEmail"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "License information"
                     },
                     "Parameters": [
                         "LicenseAgreementTerms"
@@ -70,7 +70,7 @@
                 },
                 {
                     "Label": {
-                        "default": "Lustre EC2 Configuration"
+                        "default": "Lustre EC2 configuration"
                     },
                     "Parameters": [
                         "NumberOfOSSNodes",
@@ -228,7 +228,7 @@
             "Type": "String"
         },
         "StorageKeyPairName": {
-            "Description": "Name of an existing EC2 Key Pair.",
+            "Description": "Name of an existing EC2 key pair.",
             "Type": "AWS::EC2::KeyPair::KeyName",
             "MinLength": "1",
             "ConstraintDescription": "Must be the name of an existing EC2 key pair."
