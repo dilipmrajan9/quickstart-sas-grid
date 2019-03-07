@@ -104,8 +104,12 @@
             "Type": "String"
         },
         "StorageStack": {
-            "Description": "Storage Type either Lustre or GPFS",
-            "Type": "String"
+            "Description": "The storage stack you want to use. The two choices are Lustre or IBM Spectrum Scale (GPFS).",
+            "Type": "String",
+            "AllowedValues": [
+                "Lustre",
+                "GPFS"
+            ]
         }
     },
     "Conditions": {

@@ -422,7 +422,7 @@
             "Type": "String"
         },
         "StorageNodeCount": {
-            "Description": "Number of EC2 instances to launch for NSD Server on GPFS cluster (MIN=2, MAX=64).",
+            "Description": "Number of EC2 instances to launch for NSD Server on IBM Spectrum Scale (GPFS) cluster (MIN=2, MAX=64).",
             "Type": "Number",
             "Default": "2",
             "AllowedValues": [
