@@ -70,21 +70,21 @@
                 },
                 {
                     "Label": {
-                        "default": "Lustre EC2 configuration"
-                    },
-                    "Parameters": [
-                        "NumberOfOSSNodes",
-                        "LustreOSSEBSVolumeSize"
-                    ]
-                },
-                {
-                    "Label": {
                         "default": "SAS Grid EC2 configuration"
                     },
                     "Parameters": [
                         "SASGridInstanceType",
                         "NoOfSASGridInstances",
                         "SASGridKeyPairName"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Lustre EC2 configuration"
+                    },
+                    "Parameters": [
+                        "NumberOfOSSNodes",
+                        "LustreOSSEBSVolumeSize"
                     ]
                 },
                 {
