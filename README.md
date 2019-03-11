@@ -14,7 +14,7 @@ The AWS CloudFormation templates included with the Quick Start automate the foll
 
 You can also use the AWS CloudFormation templates as a starting point for your own implementation.
 
-![Quick Start architecture for SAS Grid on AWS](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/sas-grid-on-aws-architecture.png)
+![Quick Start architecture for SAS Grid with IBM Spectrum Scale on AWS](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/sas-grid-on-aws-architecture-with-spectrum-scale.png)
 
 For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/zavnn).
 
