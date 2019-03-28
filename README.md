@@ -16,7 +16,7 @@ You can also use the AWS CloudFormation templates as a starting point for your o
 
 The following diagram shows the Quick Start architecture for SAS Grid with the Lustre storage stack.
 
-![Quick Start architecture for SAS Grid with Lustre on AWS](https://d1.awsstatic.com/partner-network/QuickStart/datasheets/sas-grid-on-aws-architecture-with-lustre.png)
+![Quick Start architecture for SAS Grid with Lustre on AWS](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/sas-grid-on-aws-architecture-with-lustre.png)
 
 For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/zavnn).
 
