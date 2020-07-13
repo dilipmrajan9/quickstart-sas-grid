@@ -1,0 +1,548 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Creates an Amazon FSx for Lustre test environment",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Amazon FSx for Lustre"
+                    },
+                    "Parameters": [
+                        "FileSystemName",
+                        "DeploymentType",
+                        "PerUnitThroughput",
+                        "StorageCapacity",
+                        "SubnetId",
+                        "SecurityGroupId",
+                        "ImportPath",
+                        "ExportPath",
+                        "ImportedFileChunkSize",
+                        "WeeklyMaintenanceStartTime"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon EC2"
+                    },
+                    "Parameters": [
+                        "InstanceType",
+                        "InstanceCount",
+                        "Ec2KeyName",
+                        "MountPoint"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "DeploymentType": {
+                    "default": "Deployment type"
+                },
+                "Ec2KeyName": {
+                    "default": "EC2 key pair"
+                },
+                "ExportPath": {
+                    "default": "Export path (optional)"
+                },
+                "FileSystemName": {
+                    "default": "Name tag value"
+                },
+                "ImportedFileChunkSize": {
+                    "default": "Imported file chunk size (MiB) (optional)"
+                },
+                "ImportPath": {
+                    "default": "Import path (optional)"
+                },
+                "InstanceCount": {
+                    "default": "Instance count"
+                },
+                "InstanceType": {
+                    "default": "Instance type"
+                },
+                "MountPoint": {
+                    "default": "Mount point"
+                },
+                "PerUnitThroughput": {
+                    "default": "Per unit throughput (MB/s per TiB of storage capacity)"
+                },
+                "SecurityGroupId": {
+                    "default": "Security group id"
+                },
+                "StorageCapacity": {
+                    "default": "Storage capacity (GiB)"
+                },
+                "SubnetId": {
+                    "default": "Subnet id"
+                },
+                "WeeklyMaintenanceStartTime": {
+                    "default": "Weekly maintenance start time (optional)"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "DeploymentType": {
+            "AllowedValues": [
+                "SCRATCH_1",
+                "SCRATCH_2",
+                "PERSISTENT_1"
+            ],
+            "Default": "PERSISTENT_1",
+            "Type": "String"
+        },
+        "Ec2KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "ExportPath": {
+            "AllowedPattern": "^$|(s3://)([a-z0-9.-]*)$",
+            "Description": "Export path e.g. s3://my-bucket/export-prefix. Optionally include only if Import Path value is provided. If included, export bucket must match import bucket.",
+            "Type": "String"
+        },
+        "FileSystemName": {
+            "AllowedPattern": "^$|([A-Za-z0-9+-=._:/ ]{0,256})$",
+            "Description": "Name of file system - name value of key-value pair",
+            "Type": "String"
+        },
+        "ImportedFileChunkSize": {
+            "Description": "Stripe set of the files imported from a data repository. Optionally include only if Import Path value is provided. Allowed values 1 - 512000.",
+            "Type": "String"
+        },
+        "ImportPath": {
+            "AllowedPattern": "^$|(s3://)([a-z0-9.-]*)$",
+            "Description": "Import path e.g. s3://my-bucket/import-prefix",
+            "Type": "String"
+        },
+        "InstanceCount": {
+            "Default": 1,
+            "MaxValue": 20,
+            "MinValue": 1,
+            "Type": "Number"
+        },
+        "InstanceType": {
+            "AllowedValues": [
+                "m5n.large",
+                "m5n.xlarge",
+                "m5n.2xlarge",
+                "m5n.4xlarge",
+                "m5n.8xlarge",
+                "m5n.12xlarge",
+                "m5n.16xlarge",
+                "m5n.24xlarge",
+                "m5n.metal",
+                "r5n.large",
+                "r5n.xlarge",
+                "r5n.2xlarge",
+                "r5n.4xlarge",
+                "r5n.8xlarge",
+                "r5n.12xlarge",
+                "r5n.16xlarge",
+                "r5n.24xlarge",
+                "r5n.metal"
+            ],
+            "Default": "m5n.8xlarge",
+            "Type": "String"
+        },
+        "MountPoint": {
+            "AllowedPattern": "^$|(/)([A-Za-z0-9._/-]{0,256})$",
+            "Description": "Mount point of the file system mounted on the EC2 instance (e.g. /fsx)",
+            "Type": "String"
+        },
+        "PerUnitThroughput": {
+            "AllowedValues": [
+                50,
+                100,
+                200
+            ],
+            "Default": 50,
+            "Type": "String"
+        },
+        "SecurityGroupId": {
+            "Description": "Select an existing security group id",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "StorageCapacity": {
+            "MaxValue": 100800,
+            "MinValue": 1200,
+            "Default": 2400,
+            "Description": "Storage capacity in GiBs",
+            "Type": "Number"
+        },
+        "SubnetId": {
+            "Description": "Select an existing subnet id",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "WeeklyMaintenanceStartTime": {
+            "AllowedPattern": "^$|[1-7]:([01]\\d|2[0-3]):?([0-5]\\d)$",
+            "Description": "Enter the weekly maintenance start time in day:hour:minute UTC format (e.g. Monday 11:30pm = 1:23:30)",
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "ExportPathProvided": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "",
+                        {
+                            "Ref": "ExportPath"
+                        }
+                    ]
+                }
+            ]
+        },
+        "ImportedFileChunkSizeProvided": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "",
+                        {
+                            "Ref": "ImportedFileChunkSize"
+                        }
+                    ]
+                }
+            ]
+        },
+        "ImportPathProvided": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "",
+                        {
+                            "Ref": "ImportPath"
+                        }
+                    ]
+                }
+            ]
+        },
+        "Persistent": {
+            "Fn::Equals": [
+                "PERSISTENT_1",
+                {
+                    "Ref": "DeploymentType"
+                }
+            ]
+        },
+        "WeeklyMaintenanceStartTimeProvided": {
+            "Fn::Not": [
+                {
+                    "Fn::Equals": [
+                        "",
+                        {
+                            "Ref": "WeeklyMaintenanceStartTime"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "Resources": {
+        "AmiInfoFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "Code": {
+                    "S3Bucket": {
+                        "Fn::Sub": "solution-references-${AWS::Region}"
+                    },
+                    "S3Key": "fsx/amilookup-lin.zip"
+                },
+                "Handler": "amilookup-lin.handler",
+                "Runtime": "nodejs12.x",
+                "Timeout": 30,
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaExecutionRoleAmiInfo",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "AmiInfo": {
+            "Type": "Custom::AmiInfo",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::GetAtt": [
+                        "AmiInfoFunction",
+                        "Arn"
+                    ]
+                },
+                "Region": {
+                    "Ref": "AWS::Region"
+                },
+                "OSName": "Amazon Linux 2 (x86_64)"
+            }
+        },
+        "Ec2Fleet": {
+            "Type": "AWS::EC2::EC2Fleet",
+            "Properties": {
+                "ExcessCapacityTerminationPolicy": "termination",
+                "LaunchTemplateConfigs": [
+                    {
+                        "LaunchTemplateSpecification": {
+                            "LaunchTemplateId": {
+                                "Ref": "LaunchTemplate"
+                            },
+                            "Version": 1
+                        }
+                    }
+                ],
+                "ReplaceUnhealthyInstances": true,
+                "TargetCapacitySpecification": {
+                    "DefaultTargetCapacityType": "on-demand",
+                    "TotalTargetCapacity": {
+                        "Ref": "InstanceCount"
+                    }
+                },
+                "Type": "maintain"
+            }
+        },
+        "LaunchTemplate": {
+            "Type": "AWS::EC2::LaunchTemplate",
+            "Properties": {
+                "LaunchTemplateName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "fsx-lustre-client-",
+                            {
+                                "Ref": "AWS::StackName"
+                            }
+                        ]
+                    ]
+                },
+                "LaunchTemplateData": {
+                    "IamInstanceProfile": {
+                        "Name": {
+                            "Ref": "InstanceProfile"
+                        }
+                    },
+                    "ImageId": {
+                        "Fn::GetAtt": [
+                            "AmiInfo",
+                            "Id"
+                        ]
+                    },
+                    "InstanceType": {
+                        "Ref": "InstanceType"
+                    },
+                    "KeyName": {
+                        "Ref": "Ec2KeyName"
+                    },
+                    "Monitoring": {
+                        "Enabled": true
+                    },
+                    "NetworkInterfaces": [
+                        {
+                            "DeviceIndex": 0,
+                            "Groups": [
+                                {
+                                    "Ref": "SecurityGroupId"
+                                }
+                            ],
+                            "SubnetId": {
+                                "Ref": "SubnetId"
+                            }
+                        }
+                    ],
+                    "TagSpecifications": [
+                        {
+                            "ResourceType": "instance",
+                            "Tags": [
+                                {
+                                    "Key": "Name",
+                                    "Value": {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "fsx-lustre-client-",
+                                                {
+                                                    "Ref": "AWS::StackName"
+                                                }
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "UserData": {
+                        "Fn::Base64": {
+                            "Fn::Sub": "#cloud-config\nrepo_update: true\nrepo_upgrade: all\n\nruncmd:\n- curl \"https://s3.amazonaws.com/aws-cli/awscli-bundle.zip\" -o \"awscli-bundle.zip\"\n- unzip awscli-bundle.zip\n- ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws\n- sudo export PATH=/usr/local/bin:$PATH\n\n- amazon-linux-extras install -y lustre2.10\n\n- filesystem_id=${FileSystem}\n- mount_point=${MountPoint}\n- availability_zone=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)\n- region=${!availability_zone:0:-1}\n- mount_name=$(aws fsx describe-file-systems --file-system-ids ${!filesystem_id} --query 'FileSystems[*].LustreConfiguration.MountName' --output text --region ${!region})\n- mkdir -p ${!mount_point}\n- echo \"${FileSystem}.fsx.${!region}.amazonaws.com:/${!mount_name} ${!mount_point} lustre defaults,noatime,flock,_netdev 0 0\" >> /etc/fstab\n- mount -a -t lustre\n- chown ec2-user:ec2-user ${!mount_point}\n\n- yum update -y\n- reboot\n"
+                        }
+                    }
+                }
+            }
+        },
+        "LambdaExecutionRoleAmiInfo": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AWSLambdaExecute"
+                ],
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "root",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ec2:DescribeImages"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "InstanceRole"
+                    }
+                ]
+            }
+        },
+        "InstanceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AdministratorAccess",
+                    "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+                ]
+            }
+        },
+        "FileSystem": {
+            "Type": "AWS::FSx::FileSystem",
+            "Properties": {
+                "FileSystemType": "LUSTRE",
+                "StorageCapacity": {
+                    "Ref": "StorageCapacity"
+                },
+                "SubnetIds": [
+                    {
+                        "Ref": "SubnetId"
+                    }
+                ],
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "SecurityGroupId"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "FileSystemName"
+                        }
+                    }
+                ],
+                "LustreConfiguration": {
+                    "DeploymentType": {
+                        "Ref": "DeploymentType"
+                    },
+                    "ExportPath": {
+                        "Fn::If": [
+                            "ExportPathProvided",
+                            {
+                                "Ref": "ExportPath"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    },
+                    "ImportPath": {
+                        "Fn::If": [
+                            "ImportPathProvided",
+                            {
+                                "Ref": "ImportPath"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    },
+                    "ImportedFileChunkSize": {
+                        "Fn::If": [
+                            "ImportedFileChunkSizeProvided",
+                            {
+                                "Ref": "ImportedFileChunkSize"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    },
+                    "PerUnitStorageThroughput": {
+                        "Fn::If": [
+                            "Persistent",
+                            {
+                                "Ref": "PerUnitThroughput"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    },
+                    "WeeklyMaintenanceStartTime": {
+                        "Fn::If": [
+                            "WeeklyMaintenanceStartTimeProvided",
+                            {
+                                "Ref": "WeeklyMaintenanceStartTime"
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "FileSystemId": {
+            "Value": {
+                "Ref": "FileSystem"
+            }
+        }
+    }
+}
