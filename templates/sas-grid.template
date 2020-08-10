@@ -95,6 +95,23 @@
                         "QSS3BucketName",
                         "QSS3KeyPrefix"
                     ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon FSx for Lustre"
+                    },
+                    "Parameters": [
+                        "FileSystemName",
+                        "DeploymentType",
+                        "PerUnitThroughput",
+                        "StorageCapacity",
+                        "SubnetId",
+                        "SecurityGroupId",
+                        "ImportPath",
+                        "ExportPath",
+                        "ImportedFileChunkSize",
+                        "WeeklyMaintenanceStartTime"
+                    ]
                 }
             ],
             "ParameterLabels": {
@@ -184,15 +201,52 @@
                 },
                 "VPCID": {
                     "default": "VPC ID"
+                },
+                 "DeploymentType": {
+                    "default": "Deployment type"
+                },
+                "Ec2KeyName": {
+                    "default": "EC2 key pair"
+                },
+                "ExportPath": {
+                    "default": "Export path (optional)"
+                },
+                "FileSystemName": {
+                    "default": "Name tag value"
+                },
+                "ImportedFileChunkSize": {
+                    "default": "Imported file chunk size (MiB) (optional)"
+                },
+                "ImportPath": {
+                    "default": "Import path (optional)"
+                },
+                "MountPoint": {
+                    "default": "Mount point"
+                },
+                "PerUnitThroughput": {
+                    "default": "Per unit throughput (MB/s per TiB of storage capacity)"
+                },
+                "SecurityGroupId": {
+                    "default": "Security group id"
+                },
+                "StorageCapacity": {
+                    "default": "Storage capacity (GiB)"
+                },
+                "SubnetId": {
+                    "default": "Subnet id"
+                },
+                "WeeklyMaintenanceStartTime": {
+                    "default": "Weekly maintenance start time (optional)"
                 }
             }
         }
     },
     "Parameters": {
         "StorageStack": {
-            "Description": "The storage stack you want to use. The two choices are Lustre or IBM Spectrum Scale (GPFS).",
+            "Description": "The storage stack you want to use. The three choices are Amazon FSx for Lustre, Lustre or IBM Spectrum Scale (GPFS).",
             "Type": "String",
             "AllowedValues": [
+                "FSx for Lustre",
                 "Lustre",
                 "GPFS"
             ]
@@ -252,9 +306,11 @@
         "SASGridInstanceType": {
             "Description": "The EC2 instance type for SAS Grid instances.",
             "Type": "String",
-            "Default": "i3.8xlarge",
+            "Default": "i3en.6xlarge",
             "AllowedValues": [
-                "i3.8xlarge"
+                "i3en.6xlarge",
+                "m5n.8xlarge",
+                "r5n.8xlarge"
             ]
         },
         "NoOfSASGridInstances": {
@@ -428,9 +484,79 @@
             "MinLength": "1",
             "Type": "String",
             "ConstraintDescription": "Must be a valid email address."
+        },
+        "DeploymentType": {
+            "AllowedValues": [
+                "SCRATCH_1",
+                "SCRATCH_2",
+                "PERSISTENT_1"
+            ],
+            "Default": "PERSISTENT_1",
+            "Type": "String"
+        },
+        "ExportPath": {
+            "AllowedPattern": "^$|(s3://)([a-z0-9.-]*)$",
+            "Description": "Export path e.g. s3://my-bucket/export-prefix. Optionally include only if Import Path value is provided. If included, export bucket must match import bucket.",
+            "Type": "String"
+        },
+        "FileSystemName": {
+            "AllowedPattern": "^$|([A-Za-z0-9+-=._:/ ]{0,256})$",
+            "Description": "Name of file system - name value of key-value pair",
+            "Type": "String"
+        },
+        "ImportedFileChunkSize": {
+            "Description": "Stripe set of the files imported from a data repository. Optionally include only if Import Path value is provided. Allowed values 1 - 512000.",
+            "Type": "String"
+        },
+        "ImportPath": {
+            "AllowedPattern": "^$|(s3://)([a-z0-9.-]*)$",
+            "Description": "Import path e.g. s3://my-bucket/import-prefix",
+            "Type": "String"
+        },
+        "MountPoint": {
+            "AllowedPattern": "^$|(/)([A-Za-z0-9._/-]{0,256})$",
+            "Description": "Mount point of the file system mounted on the EC2 instance (e.g. /fsx)",
+            "Type": "String"
+        },
+        "PerUnitThroughput": {
+            "AllowedValues": [
+                50,
+                100,
+                200
+            ],
+            "Default": 50,
+            "Type": "String"
+        },
+        "SecurityGroupId": {
+            "Description": "Select an existing security group id",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "StorageCapacity": {
+            "MaxValue": 100800,
+            "MinValue": 1200,
+            "Default": 2400,
+            "Description": "Storage capacity in GiBs",
+            "Type": "Number"
+        },
+        "SubnetId": {
+            "Description": "Select an existing subnet id",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "WeeklyMaintenanceStartTime": {
+            "AllowedPattern": "^$|[1-7]:([01]\\d|2[0-3]):?([0-5]\\d)$",
+            "Description": "Enter the weekly maintenance start time in day:hour:minute UTC format (e.g. Monday 11:30pm = 1:23:30)",
+            "Type": "String"
         }
     },
     "Conditions": {
+        "RunFSxLustreStack": {
+            "Fn::Equals": [
+                {
+                    "Ref": "StorageStack"
+                },
+                "FSx for Lustre"
+            ]
+        },
         "RunLustreStack": {
             "Fn::Equals": [
                 {
@@ -992,6 +1118,98 @@
                 }
             },
             "Condition": "RunGPFSStack"
+        },
+        "RunFSxLustreStack": {
+            "Type": "AWS::CloudFormation::Stack",
+            "Properties": {
+                "TemplateURL": {
+                    "Fn::Sub": [
+                        "https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/sas-nodes-fsx-lustre_bckp.template",
+                        {
+                            "QSS3Region": {
+                                "Fn::If": [
+                                    "GovCloudCondition",
+                                    "s3-us-gov-west-1",
+                                    "s3"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Parameters": {
+                    "SASSoftwareDepot": {
+                        "Ref": "SASSoftwareDepot"
+                    },
+                    "SASSoftwareDepotName": {
+                        "Ref": "SASSoftwareDepotName"
+                    },
+                    "SASPlanFiles": {
+                        "Ref": "SASPlanFiles"
+                    },
+                    "SASLicenseMeta": {
+                        "Ref": "SASLicenseMeta"
+                    },
+                    "SASLicenseApp": {
+                        "Ref": "SASLicenseApp"
+                    },
+                    "SASGridInstanceType": {
+                        "Ref": "SASGridInstanceType"
+                    },
+                    "NoOfSASGridInstances": {
+                        "Ref": "NoOfSASGridInstances"
+                    },
+                    "SASGridKeyPairName": {
+                        "Ref": "SASGridKeyPairName"
+                    },
+                    "PrivateSubnet1ID": {
+                        "Ref": "PrivateSubnet1ID"
+                    },
+                    "VPCID": {
+                        "Ref": "VPCID"
+                    },
+                    "VPCCIDR": {
+                        "Ref": "VPCCIDR"
+                    },
+                    "DomainDNSName": {
+                        "Ref": "DomainDNSName"
+                    },
+                    
+                    "FileSystemName": {
+                        "Ref": "FileSystemName"
+                    },
+                    "DeploymentType": {
+                        "Ref": "DeploymentType"
+                    },
+                    "PerUnitThroughput": {
+                        "Ref": "PerUnitThroughput"
+                    },
+                    "StorageCapacity": {
+                        "Ref": "StorageCapacity"
+                    },
+                    "SubnetId": {
+                        "Ref": "SubnetId"
+                    },
+                    "SecurityGroupId": {
+                        "Ref": "SecurityGroupId"
+                    },
+                    "ImportPath": {
+                        "Ref": "ImportPath"
+                    },
+                    "ExportPath": {
+                        "Ref": "ExportPath"
+                    },
+                    "ImportedFileChunkSize": {
+                        "Ref": "ImportedFileChunkSize"
+                    },
+                    "WeeklyMaintenanceStartTime": {
+                        "Ref": "WeeklyMaintenanceStartTime"
+                    },
+                    "MountPoint": {
+                        "Ref": "MountPoint"
+                    }
+                }
+            },
+            "Condition": "RunFSxLustreStack"
         }
     },
     "Mappings": {
